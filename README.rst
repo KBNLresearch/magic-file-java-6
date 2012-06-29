@@ -1,4 +1,4 @@
-Experimental Java binding for `libmagic <http://linux.die.net/man/3/libmagic>`_ file characterisation
+Experimental Java binding for `libmagic <http://linux.die.net/man/3/libmagic>`_ `file <http://manpages.ubuntu.com/manpages/lucid/en/man1/file.1.html>`_ characterisation
 ======================
 
 This is an experimental package. Sources for the binding were tested by compiling them on Ubuntu 10.04 LTS against headers from the libmagic-dev package version 5.03.
