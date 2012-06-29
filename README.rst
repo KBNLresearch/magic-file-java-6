@@ -55,9 +55,16 @@ Available make targets
 Prerequisites
 -------
 The complete list of preconditions:
+
 - Ubuntu 10.04 LTS
+
 - libmagic-dev >= 5.03
+
 - libmagic >= 5.03
+
 - Java 6 Sun jdk: version 1.6.0.26
+
 - make
+
 - Maven >= 2.x
+
