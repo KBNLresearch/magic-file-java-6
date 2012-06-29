@@ -13,7 +13,6 @@
 */
 package nl.kb.magicfile;
 
-import com.sun.servicetag.SystemEnvironment;
 import org.apache.commons.io.IOUtils;
 
 import java.io.*;
