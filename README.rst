@@ -3,7 +3,7 @@ Experimental Java binding for `libmagic <http://linux.die.net/man/3/libmagic>`_ 
 
 This is an experimental package. Sources for the binding were tested by compiling them on Ubuntu 10.04 LTS against headers from the libmagic-dev package version 5.03.
 
-Compiled bindings proved to run without error on both `libmagic <http://linux.die.net/man/3/libmagic>`_ v5.03 and v5.11.
+Compiled bindings proved to run without error on both `libmagic <http://linux.die.net/man/3/libmagic>`_ v5.03 and v5.11, using both sun jdk 1.6.0.26 and openjdk 1.6.0_20.
 
 Compiling and Packaging
 -------
@@ -16,6 +16,7 @@ A Makefile is included which also makes use of maven lifecycle goals to test the
 - Make sure your java home is set to the correct VM, if not, something like::
 
     $ export JAVA_HOME=/usr/lib/jvm/java-6-sun-1.6.0.26/
+    $ export JAVA_HOME=/usr/lib/jvm/java-1.6.0-openjdk/
 
 - Run make (this will execute the 'package' goal of maven as well)::
 
@@ -76,7 +77,7 @@ The complete list of preconditions:
 
 - libmagic >= 5.03
 
-- Java 6 Sun jdk: version 1.6.0.26
+- Java 6 Sun jdk: version 1.6.0.26 OR Java 6 OpenJDK 1.6.0_20
 
 - make
 
