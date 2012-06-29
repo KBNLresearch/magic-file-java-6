@@ -29,7 +29,21 @@ A Makefile is included which also makes use of maven lifecycle goals to test the
 
     $ mvn install
 
-Completing the above steps succesfully means you can now include the jar in any java project running on the system, provided that the file libmagicjbind.so can be found in one of the paths specified in the jvm's java.library.path system property (keeping it in /usr/lib/ will probably ensure this).
+Completing the above steps succesfully means you can now include the jar in any java project running on the system, provided that the file libmagicjbind.so can be found in one of the paths specified in the jvm's java.library.path system property (keeping it in /usr/lib/ will probably ensure this)::
+
+		<dependency>
+			<groupId>nl.kb</groupId>
+			<artifactId>magicfile</artifactId>
+			<version>0.1.0</version>
+		</dependency>
+
+
+You could also package a 'standalone' jar (which has the commons-io jar included) by running::
+
+		$ make standalone
+		$ java -jar target/magicfile-0.1.0-jar-with-dependencies.jar /path/to/file
+
+
 
 Available make targets
 ------------
