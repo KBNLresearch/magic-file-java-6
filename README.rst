@@ -3,7 +3,7 @@ Experimental Java binding for libmagic file characterisation
 
 This is an experimental package. Sources for the binding were tested by compiling them on Ubuntu 10.04 LTS against headers from the libmagic-dev package version 5.03.
 
-Compiled bindings proved to run without error on both libmagic v5.03 and v5.11.
+Compiled bindings proved to run without error on both `libmagic <http://linux.die.net/man/3/libmagic>`_ v5.03 and v5.11.
 
 Compiling and Packaging
 -------
