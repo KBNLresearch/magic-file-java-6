@@ -52,7 +52,7 @@ Available make targets
 
 - 'clean': removes the .so file and calls 'mvn clean'
 
-- 'compile': compiles the sources against libmagic. Not that compilation expects the 'include' and 'include/linux' directories to exist in your jvm's root.
+- 'compile': compiles the sources against libmagic. Note that compilation expects the 'include' and 'include/linux' directories to exist in your jvm's root.
 
 - 'test': runs 'compile' and mvn test
 
