@@ -87,9 +87,10 @@ JNIEXPORT jstring JNICALL Java_nl_kb_magicfile_MagicFile_checkEncoding(JNIEnv *e
 JNIEXPORT jstring JNICALL Java_nl_kb_magicfile_MagicFile_checkTextStream(JNIEnv *env, jclass cl, jbyteArray bytes) {
 	void* pointer = NULL;
 	int len = castBytes(env, bytes, pointer);
-	if(len < 0)
-		return env->NewStringUTF("fail");
-	return env->NewStringUTF(checkStream(MAGIC_NONE, pointer, (size_t)len));
+	if(len < 1) {
+		env->ThrowNew(env->FindClass("java/io/IOException"), "Byte stream is empty");
+	} else
+	    return env->NewStringUTF(checkStream(MAGIC_NONE, pointer, (size_t)len));
 }
 
 /*
@@ -100,9 +101,10 @@ JNIEXPORT jstring JNICALL Java_nl_kb_magicfile_MagicFile_checkTextStream(JNIEnv 
 JNIEXPORT jstring JNICALL Java_nl_kb_magicfile_MagicFile_checkMimeStream(JNIEnv *env, jclass cl, jbyteArray bytes) {
 	void* pointer = NULL;
 	int len = castBytes(env, bytes, pointer);
-	if(len < 0)
-		return env->NewStringUTF("fail");
-	return env->NewStringUTF(checkStream(MAGIC_MIME_TYPE, pointer, (size_t)len));
+	if(len < 1) {
+		env->ThrowNew(env->FindClass("java/io/IOException"), "Byte stream is empty");
+	} else
+	    return env->NewStringUTF(checkStream(MAGIC_MIME_TYPE, pointer, (size_t)len));
 }
 
 /*
@@ -113,9 +115,10 @@ JNIEXPORT jstring JNICALL Java_nl_kb_magicfile_MagicFile_checkMimeStream(JNIEnv 
 JNIEXPORT jstring JNICALL Java_nl_kb_magicfile_MagicFile_checkEncodingStream(JNIEnv *env, jclass cl, jbyteArray bytes) {
 	void* pointer = NULL;
 	int len = castBytes(env, bytes, pointer);
-	if(len < 0)
-		return env->NewStringUTF("fail");
-	return env->NewStringUTF(checkStream(MAGIC_MIME_ENCODING, pointer, (size_t)len));
+	if(len < 1) {
+		env->ThrowNew(env->FindClass("java/io/IOException"), "Byte stream is empty");
+	} else
+	    return env->NewStringUTF(checkStream(MAGIC_MIME_ENCODING, pointer, (size_t)len));
 }
 
 
