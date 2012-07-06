@@ -15,7 +15,7 @@ Compiling and Packaging
 -------
 A Makefile is included which also makes use of maven lifecycle goals to test the binding. The quickest way to compile and install the sources is by running the commands below.
 
-- Install the libmagic-dev package (currently it will install the 5.03 version)::
+- Install the libmagic-dev package (these sources were tested against the 5.03 version)::
 
     $ sudo apt-get install libmagic-dev
 
