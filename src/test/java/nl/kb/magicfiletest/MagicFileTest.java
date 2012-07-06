@@ -62,10 +62,27 @@ public class MagicFileTest extends TestCase {
         System.out.println("-- result: '" + result + "' -- OK");
     }
 
+    public void testFileNameInInstance() throws Exception {
+        MagicFile m = new MagicFile(testFilePath);
+        System.out.println("Asserting that an instance will work with an existing filename");
+        System.out.println("Result A: " + m.checkText());
+        System.out.println("Result B: " + m.checkMime());
+        System.out.println("Result C: " + m.checkEncoding());
+        System.out.println("OK");
+    }
+
+    public void testFileInInstance() throws Exception {
+        MagicFile m = new MagicFile(new File(testFilePath));
+        System.out.println("Asserting that an instance will work with existing file");
+        System.out.println("Result A: " + m.checkText());
+        System.out.println("Result B: " + m.checkMime());
+        System.out.println("Result C: " + m.checkEncoding());
+        System.out.println("OK");
+    }
+
 
     public void testBytesInInstance() throws Exception {
-        MagicFile m = new MagicFile();
-        m.setInput(new FileInputStream(testFilePath));
+        MagicFile m = new MagicFile(new FileInputStream(testFilePath));
         System.out.println("Asserting stream gets loaded correctly in buffer for multiple checks ");
         System.out.println("Result A: " + m.checkText());
         System.out.println("Result B: " + m.checkMime());
@@ -79,13 +96,18 @@ public class MagicFileTest extends TestCase {
         System.out.println("Result: " + MagicFile.checkText(is));
         System.out.println("OK");
         System.out.println("Asserting that an IOException gets thrown when trying to access the same stream twice");
-        boolean thrown = false;
+        int thrown = 0;
         try {
             MagicFile.checkEncoding(is);
         } catch(IOException e) {
-            thrown = true;
+            thrown++;
         }
-        assertTrue(thrown);
+        try {
+            MagicFile.checkMime(is);
+        } catch(IOException e) {
+            thrown++;
+        }
+        assertEquals(thrown, 2);
         System.out.println("OK");
     }
 }

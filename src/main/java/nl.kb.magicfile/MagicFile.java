@@ -17,13 +17,13 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.FileInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 
 
 public final class MagicFile {
-    private static final String LIBRARY_NAME="magicjbind";
+    private static final String LIBRARY_NAME = "magicjbind";
+    private static final int MAX_CHECK_SIZE = 4096;
 
     private synchronized static native String checkText(String path);
     private synchronized static native String checkMime(String path);
@@ -32,10 +32,26 @@ public final class MagicFile {
     private synchronized static native String checkMimeStream(byte[] buffer) throws IOException;
     private synchronized static native String checkEncodingStream(byte[] buffer) throws IOException;
 
-    private byte[] currentBytes = null;
+    private byte[] currentBytes = new byte[MAX_CHECK_SIZE];
+    private boolean byteBufferFilled = false;
+    private File currentFile = null;
+
+    public MagicFile(InputStream is) throws IOException { setInput(is); }
+    public MagicFile(File f) throws FileNotFoundException { setInput(f); }
+    public MagicFile(String filename) throws FileNotFoundException { setInput(new File(filename));}
+
+    public void setInput(File f) throws FileNotFoundException {
+        if(f.exists() && f.canRead()) {
+            currentFile = f;
+        } else {
+            throw new FileNotFoundException("Unable to read file: " + f.getAbsolutePath());
+        }
+    }
 
     public void setInput(InputStream is) throws IOException {
-        currentBytes = IOUtils.toByteArray(is);
+        IOUtils.read(is, currentBytes);
+        byteBufferFilled = true;
+        currentFile = null;
     }
 
     static {
@@ -43,68 +59,83 @@ public final class MagicFile {
     }
 
     public static String checkText(File file) throws FileNotFoundException {
-        if(file.exists() && file.canRead()) {
+        if(file != null && file.exists() && file.canRead()) {
             return checkText(file.getAbsolutePath());
         } else {
-            throw new FileNotFoundException("File not found: " + file.getAbsolutePath());
+            throw new FileNotFoundException("File cannot be read: " + (file != null ? file.getAbsolutePath() : ""));
         }
     }
 
     public static String checkMime(File file) throws FileNotFoundException {
-        if(file.exists() && file.canRead()) {
+        if(file != null && file.exists() && file.canRead()) {
             return checkMime(file.getAbsolutePath());
         } else {
-            throw new FileNotFoundException("File not found: " + file.getAbsolutePath());
+            throw new FileNotFoundException("File cannot be read: " + (file != null ? file.getAbsolutePath() : ""));
         }
     }
 
     public static String checkEncoding(File file) throws FileNotFoundException {
-        if(file.exists()) {
+        if(file != null && file.exists() && file.canRead()) {
             return checkEncoding(file.getAbsolutePath());
         } else {
-            throw new FileNotFoundException("File not found: " + file.getAbsolutePath());
+            throw new FileNotFoundException("File cannot be read: " + (file != null ? file.getAbsolutePath() : ""));
         }
     }
 
     public static String checkText(InputStream is) throws IOException {
-        if(is.available() > 0) {
-            return checkTextStream(IOUtils.toByteArray(is));
+        if(is != null && is.available() > 0) {
+            byte[] bytes = new byte[MAX_CHECK_SIZE];
+            IOUtils.read(is, bytes);
+            String characterisation = checkTextStream(bytes);
+            is.close();
+            return characterisation;
         } else {
-            throw new IOException("At end of stream");
+            throw new IOException("At end of stream or stream is closed");
         }
     }
 
     public static String checkMime(InputStream is) throws IOException {
-        if(is.available() > 0) {
-            return checkMimeStream(IOUtils.toByteArray(is));
+        if(is != null && is.available() > 0) {
+            byte[] bytes = new byte[MAX_CHECK_SIZE];
+            IOUtils.read(is, bytes);
+            String characterisation = checkMimeStream(bytes);
+            is.close();
+            return characterisation;
         } else {
-            throw new IOException("At end of stream");
+            throw new IOException("At end of stream or stream is closed");
         }
     }
 
     public static String checkEncoding(InputStream is) throws IOException {
-        if(is.available() > 0) {
-            return checkEncodingStream(IOUtils.toByteArray(is));
+        if(is != null && is.available() > 0) {
+            byte[] bytes = new byte[MAX_CHECK_SIZE];
+            IOUtils.read(is, bytes);
+            String characterisation = checkEncodingStream(bytes);
+            is.close();
+            return characterisation;
         } else {
-            throw new IOException("At end of stream");
+            throw new IOException("At end of stream or stream is closed");
         }
     }
 
     public String checkText() throws IOException {
-        if(currentBytes == null)
-            throw new IOException("No input stream set");
+        if(currentFile != null) { return checkText(currentFile); }
+        if(!byteBufferFilled)
+            throw new IOException("No input-stream or file set");
         return checkTextStream(currentBytes);
     }
 
     public String checkMime() throws IOException {
-        if(currentBytes == null)
-            throw new IOException("No input stream set");
+        if(currentFile != null) { return checkMime(currentFile); }
+        if(!byteBufferFilled)
+            throw new IOException("No input-stream or file set");
         return checkMimeStream(currentBytes);
     }
 
     public String checkEncoding() throws IOException {
-        if(currentBytes == null)
-            throw new IOException("No input stream set");
+        if(currentFile != null) { return checkEncoding(currentFile); }
+        if(!byteBufferFilled)
+            throw new IOException("No input-stream or file set");
         return checkEncodingStream(currentBytes);
     }
 
@@ -113,42 +144,9 @@ public final class MagicFile {
         if(args.length > 0 && new File(args[0]).exists() && new File(args[0]).canRead()) {
             try {
                 System.out.println("Characteristics for: " + args[0]);
-                System.out.println(checkText(new File(args[0])));
-                System.out.println(checkMime(new File(args[0])));
-                System.out.println(checkEncoding(new File(args[0])));
-                System.out.println("When streaming the bytes: " + args[0]);
-                System.out.println(checkText(new FileInputStream(args[0])));
-                System.out.println(checkMime(new FileInputStream(args[0])));
-                System.out.println(checkEncoding(new FileInputStream(args[0])));
-
-                System.out.println("\n===\nTesting native exceptions");
-                InputStream is = new FileInputStream(args[0]);
-                checkMimeStream(IOUtils.toByteArray(is));
-                int checks = 0;
-                try {
-                    System.out.println(checkTextStream(IOUtils.toByteArray(is)));
-                } catch(IOException e) {
-                    checks++;
-                    System.out.print("That's 1 --");
-                }
-                try {
-                    System.out.println(checkEncodingStream(IOUtils.toByteArray(is)));
-                } catch(IOException e) {
-                    checks++;
-                    System.out.print(" 2 --");
-                }
-                try {
-                    System.out.println(checkMimeStream(IOUtils.toByteArray(is)));
-                } catch(IOException e) {
-                    checks++;
-                    System.out.println(" 3");
-                }
-                if(checks < 3) {
-                    System.err.println("WARN: not all expected native exceptions were thrown " + checks + "/3");
-                } else {
-                    System.out.println("OK");
-                }
-
+                System.out.println("Textual representation: " + checkText(new File(args[0])));
+                System.out.println("Magic mime type: " + checkMime(new File(args[0])));
+                System.out.println("Encoding: " + checkEncoding(new File(args[0])));
             } catch(FileNotFoundException e) {
                 e.printStackTrace();
             } catch(IOException e) {
