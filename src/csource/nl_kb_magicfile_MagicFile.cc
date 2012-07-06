@@ -13,9 +13,8 @@
 */
 
 #include "nl_kb_magicfile_MagicFile.h"
-#include <iostream>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 #include <magic.h>
 
 using namespace std;
