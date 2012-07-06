@@ -88,7 +88,13 @@ The complete list of preconditions:
 
 - libmagic >= 5.03
 
-- Java 6 Sun jdk: version 1.6.0.26 OR Java 6 OpenJDK 1.6.0_20
+- jdk, tested versions:
+
+	- Java 6 Sun jdk version 1.6.0.26 
+
+	- Java 6 OpenJDK 1.6.0_20
+
+	- Java 7 jdk1.7.0-b147
 
 - make
 
