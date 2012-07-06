@@ -1,11 +1,11 @@
 all: package
 
 clean:
-	rm libmagicjbind.so
+	rm -f src/main/resources/libmagicjbind.so
 	mvn clean
 
 compile:
-	g++ -shared -o libmagicjbind.so -I$(JAVA_HOME)/include/ -I$(JAVA_HOME)/include/linux/ -lmagic src/csource/nl_kb_magicfile_MagicFile.cc
+	g++ -shared -o src/main/resources/libmagicjbind.so -I$(JAVA_HOME)/include/ -I$(JAVA_HOME)/include/linux/ -lmagic src/csource/nl_kb_magicfile_MagicFile.cc
 
 test: compile
 	mvn test;
@@ -19,9 +19,8 @@ standalone: package
 testrun: package
 	mvn exec:java -Dexec.mainClass="nl.kb.magicfile.MagicFile" -Dexec.args="libmagicjbind.so"
 
-install:
-	cp libmagicjbind.so /usr/lib/
-	ldconfig
+install: package
+	mvn install
 
 uninstall:
-	rm -f /usr/lib/libmagicjbind.so
+	mvn uninstall

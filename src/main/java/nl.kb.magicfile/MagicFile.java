@@ -15,14 +15,11 @@ package nl.kb.magicfile;
 
 import org.apache.commons.io.IOUtils;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
 
 
 public final class MagicFile {
-    private static final String LIBRARY_NAME = "magicjbind";
+    private static final String LIBRARY_NAME = "libmagicjbind.so";
     private static final int MAX_CHECK_SIZE = 4096;
 
     private synchronized static native String checkText(String path);
@@ -55,7 +52,21 @@ public final class MagicFile {
     }
 
     static {
-        System.loadLibrary(LIBRARY_NAME);
+        InputStream is = MagicFile.class.getResourceAsStream("/" + LIBRARY_NAME);
+        try {
+            File temp = File.createTempFile(LIBRARY_NAME, "");
+            FileOutputStream fos = new FileOutputStream(temp);
+            byte[] buffer = new byte[1024];
+            int read = -1;
+            while(is.read(buffer) != -1) {
+                fos.write(buffer);
+            }
+            fos.close();
+            is.close();
+            System.load(temp.getAbsolutePath());
+        } catch(IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static String checkText(File file) throws FileNotFoundException {
