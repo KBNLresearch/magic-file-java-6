@@ -5,6 +5,7 @@ clean:
 	mvn clean
 
 compile:
+	mkdir -p src/main/resources
 	g++ -shared -o src/main/resources/libmagicjbind.so -I$(JAVA_HOME)/include/ -I$(JAVA_HOME)/include/linux/ -lmagic src/csource/nl_kb_magicfile_MagicFile.cc
 
 test: compile
@@ -22,5 +23,3 @@ testrun: package
 install: package
 	mvn install
 
-uninstall:
-	mvn uninstall
