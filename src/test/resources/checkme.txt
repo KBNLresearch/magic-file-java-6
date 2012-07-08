@@ -1,1 +1,2 @@
 hello world
+im us-ascii, not bytes

@@ -13,6 +13,7 @@
 */
 package nl.kb.magicfiletest;
 
+import nl.kb.magicfile.Check;
 import nl.kb.magicfile.MagicFile;
 import junit.framework.TestCase;
 import java.io.IOException;
@@ -20,6 +21,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.Map;
 
 public class MagicFileTest extends TestCase {
     private static String testFilePath;
@@ -98,16 +101,42 @@ public class MagicFileTest extends TestCase {
         System.out.println("Asserting that an IOException gets thrown when trying to access the same stream twice");
         int thrown = 0;
         try {
-            MagicFile.checkEncoding(is);
+            System.out.println("Should fail: " + MagicFile.checkEncoding(is));
         } catch(IOException e) {
             thrown++;
         }
         try {
-            MagicFile.checkMime(is);
+            System.out.println("Should fail: " + MagicFile.checkMime(is));
         } catch(IOException e) {
             thrown++;
         }
         assertEquals(thrown, 2);
         System.out.println("OK");
+    }
+
+    public void testComprehensive() throws Exception {
+        System.out.print("Asserting that we can characterize all at once by file");
+        Map<Check, String> results = MagicFile.characterize(Arrays.asList(new Check[]{Check.ENCODING, Check.MIMETYPE, Check.TEXT}), new File(testFilePath));
+        assertTrue(results.get(Check.ENCODING).contains("ascii"));
+        assertTrue(results.get(Check.MIMETYPE).contains("text/plain"));
+        assertTrue(results.get(Check.TEXT).contains("ASCII text"));
+        System.out.println(" -- OK");
+    }
+
+    public void testComprehensiveStream() throws Exception {
+        System.out.print("Asserting that we can characterize all at once by stream");
+        Map<Check, String> results = MagicFile.characterize(Arrays.asList(new Check[]{Check.ENCODING, Check.MIMETYPE, Check.TEXT}), new FileInputStream(testFilePath));
+        assertTrue(results.get(Check.MIMETYPE).contains("text/plain"));
+        assertTrue(results.get(Check.TEXT).contains("ASCII text"));
+        System.out.println(" -- OK");
+    }
+
+    public void testComprehensiveInstance() throws Exception {
+        System.out.print("Asserting that we can characterize all at once by stream in an instance");
+        MagicFile m = new MagicFile(new FileInputStream(testFilePath));
+        Map<Check, String> results = m.characterize(Arrays.asList(new Check[]{Check.ENCODING, Check.MIMETYPE, Check.TEXT}));
+        assertTrue(results.get(Check.MIMETYPE).contains("text/plain"));
+        assertTrue(results.get(Check.TEXT).contains("ASCII text"));
+        System.out.println(" -- OK");
     }
 }
